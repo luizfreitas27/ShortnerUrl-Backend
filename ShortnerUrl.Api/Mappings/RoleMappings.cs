@@ -38,5 +38,22 @@ public class RoleMappings : IEntityTypeConfiguration<Role>
 
         builder.HasIndex(r => r.Name)
             .IsUnique();
+
+        builder.HasData(
+            new Role
+            {
+                Id = 1,
+                Name = "Administrator",
+                Description = "System Administrator.",
+                CreatedAt = new DateTime(2025, 1, 1,0,0,0,0, DateTimeKind.Utc),
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "User",
+                Description = "System Common User.",
+                CreatedAt = new DateTime(2025, 1, 1,0,0,0,0, DateTimeKind.Utc),
+            }
+        );
     }
 }
