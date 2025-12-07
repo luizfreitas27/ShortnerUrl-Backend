@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ShortnerUrl.Api.Migrations
 {
     /// <inheritdoc />
@@ -34,6 +36,7 @@ namespace ShortnerUrl.Api.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     username = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     password = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     role_id = table.Column<int>(type: "integer", nullable: false),
@@ -75,6 +78,15 @@ namespace ShortnerUrl.Api.Migrations
                         principalTable: "tb_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "tb_roles",
+                columns: new[] { "id", "created_at", "description", "name", "updated_at" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System Administrator.", "Administrator", null },
+                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "System Common User.", "User", null }
                 });
 
             migrationBuilder.CreateIndex(

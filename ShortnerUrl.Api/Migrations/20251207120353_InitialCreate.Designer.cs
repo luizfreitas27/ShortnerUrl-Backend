@@ -12,8 +12,8 @@ using ShortnerUrl.Api.Persistence;
 namespace ShortnerUrl.Api.Migrations
 {
     [DbContext(typeof(ShortnerUrlContext))]
-    [Migration("20251207020347_new-field")]
-    partial class newfield
+    [Migration("20251207120353_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -106,6 +106,22 @@ namespace ShortnerUrl.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("tb_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "System Administrator.",
+                            Name = "Administrator"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "System Common User.",
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("ShortnerUrl.Api.Models.User", b =>

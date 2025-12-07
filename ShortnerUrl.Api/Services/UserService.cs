@@ -43,8 +43,15 @@ public class UserService : IUserService
             _logger.LogInformation("Username already registered...");
             throw new AppException("Username already registered", 409);
         }
-
+        
         var newUser = _mapper.From(dto).AdaptToType<User>();
+        
+        var role = await _unityOfWork.Roles.GetRoleById(newUser.RoleId, cancellationToken);
+        if (role == null)
+        {
+            _logger.LogInformation("Role does not exist...");
+            throw new AppException("Role does not exist", 404);
+        }
         
         _unityOfWork.Users.Add(newUser);
         
@@ -53,7 +60,6 @@ public class UserService : IUserService
         _logger.LogInformation("User created successfully.");
 
         return _mapper.From(newUser).AdaptToType<UserResponseDto>();
-
     }
 
     public Task<UserResponseDto> UpdateAsync(UserUpdateRequestDto dto, CancellationToken cancellationToken)

@@ -1,6 +1,8 @@
 using FluentValidation.AspNetCore;
 using Microsoft.OpenApi.Models;
 using ShortnerUrl.Api.Configurations;
+using ShortnerUrl.Api.Middleware;
+using ShortnerUrl.Api.Services.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,8 @@ builder.Services.AddDbContextConfig(builder.Configuration);
 builder.Services.AddJwtConfig(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddDependencyInjectionConfig();
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -49,12 +53,18 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyHeader()
+            .AllowAnyMethod()
             .AllowCredentials();
     });
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seedService = scope.ServiceProvider.GetRequiredService<SeedService>();
+    await seedService.SeedAdminAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -64,7 +74,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandleMiddleware>();
+
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 

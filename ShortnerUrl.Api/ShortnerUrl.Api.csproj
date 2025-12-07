@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+      <UserSecretsId>737ea966-18f2-4932-91ea-c2b60863ea62</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -31,7 +32,7 @@
         <PackageReference Include="Serilog" Version="4.3.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
     </ItemGroup>
 

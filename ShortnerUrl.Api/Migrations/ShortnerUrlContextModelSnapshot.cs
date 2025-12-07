@@ -103,6 +103,22 @@ namespace ShortnerUrl.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("tb_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "System Administrator.",
+                            Name = "Administrator"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "System Common User.",
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("ShortnerUrl.Api.Models.User", b =>

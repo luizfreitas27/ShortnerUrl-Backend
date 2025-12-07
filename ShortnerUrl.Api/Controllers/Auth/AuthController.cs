@@ -17,7 +17,8 @@ public class AuthController : ControllerBase
         _service = service;
     }
 
-    [HttpPost("login")]
+    [HttpPost]
+    [Route("sign-in")]
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
     public async Task<IActionResult> LoginUser([FromBody] LoginRequestDto dto, CancellationToken cancellationToken)
     {
@@ -26,7 +27,8 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("refresh")]
+    [HttpPost]
+    [Route("refresh-token")]
     [ProducesResponseType(typeof(LoginResponseDto), 200)]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto,
         CancellationToken cancellationToken)

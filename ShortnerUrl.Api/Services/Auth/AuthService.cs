@@ -47,12 +47,13 @@ public class AuthService : IAuthService
         _logger.LogInformation("Getting token...");
 
         var (accessToken, expiresAt) = _jwtTokenProvider.GenerateToken(user);
-        var refreshToken = _jwtTokenProvider.GenerateRefreshToken();
+        var newRefreshToken = _jwtTokenProvider.GenerateRefreshToken();
 
-        user.RefreshToken = refreshToken;
+        user.RefreshToken = newRefreshToken;
         user.ExpiresAt = DateTime.UtcNow.AddDays(7);
         
         _unityOfWork.Users.Update(user);
+        
         await _unityOfWork.CommitAsync(cancellationToken);
         
         _logger.LogInformation("The login has been completed successfully...");
@@ -61,10 +62,10 @@ public class AuthService : IAuthService
         {
             AccessToken = accessToken,
             ExpiresAt = expiresAt,
-            RefreshToken = refreshToken,
+            RefreshToken = newRefreshToken,
             Username = user.Username,
             RoleId = (RoleType)user.RoleId,
-            RoleName = user.Role?.Name ?? user.RoleId.ToString()
+            RoleName = ((RoleType)user.RoleId).ToString()
         };
     }
 
@@ -96,7 +97,7 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken,
             Username = user.Username,
             RoleId = (RoleType)user.RoleId,
-            RoleName = user.Role?.Name ?? user.RoleId.ToString()
+            RoleName = ((RoleType)user.RoleId).ToString()
         };
     }
 }

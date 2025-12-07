@@ -1,6 +1,9 @@
 ﻿using ShortnerUrl.Api.Auth;
 using ShortnerUrl.Api.Repositories;
+using ShortnerUrl.Api.Services;
 using ShortnerUrl.Api.Services.Auth;
+using ShortnerUrl.Api.Services.Seed;
+using ShortnerUrl.Api.Shared;
 using ShortnerUrl.Api.Shared.Auth;
 using ShortnerUrl.Api.Shared.Repositories;
 
@@ -13,6 +16,9 @@ public static class DependencyInjectionConfig
         services.AddScoped<IUnityOfWork, UnityOfWork>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<SeedService>();
+        services.AddScoped<IAdminService, AdminService>();
 
         return services;
     }

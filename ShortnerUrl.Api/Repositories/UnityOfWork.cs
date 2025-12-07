@@ -9,6 +9,7 @@ public class UnityOfWork : IUnityOfWork, IAsyncDisposable
     private ShortnerUrlContext  _context;
     
     private IUserRepository? _userRepository;
+    private IRoleRepository? _roleRepository;
 
     public UnityOfWork(ShortnerUrlContext context)
     {
@@ -18,7 +19,10 @@ public class UnityOfWork : IUnityOfWork, IAsyncDisposable
     public IUserRepository Users => 
         _userRepository ??= new UserRepository(_context);
     
+    public IRoleRepository Roles =>
+        _roleRepository ??= new RoleRepository(_context);
     
+
     public async Task<int> CommitAsync(CancellationToken cancellationToken)
     {
         return await _context.SaveChangesAsync(cancellationToken);
