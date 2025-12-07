@@ -15,6 +15,11 @@ public class UserMappings : IEntityTypeConfiguration<User>
             .HasColumnName("id")
             .ValueGeneratedOnAdd();
         
+        builder.Property(u => u.Email)
+            .HasColumnName("email")
+            .HasMaxLength(255)
+            .IsRequired();
+        
         builder.Property(u => u.Username)
             .HasColumnName("username")
             .HasMaxLength(255)
