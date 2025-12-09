@@ -6,7 +6,7 @@ namespace ShortnerUrl.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
     private readonly IUserService _service;
 
@@ -23,5 +23,4 @@ public class UserController : ControllerBase
         
         return Created($"/api/User/{response.Id}", response);
     }
-
 }

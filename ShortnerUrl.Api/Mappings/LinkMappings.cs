@@ -12,7 +12,7 @@ public class LinkMappings : IEntityTypeConfiguration<Link>
         
         builder.HasKey(l => l.Id);
         builder.Property(l => l.Id)
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever();
         
         builder.Property(l => l.Name)
             .HasColumnName("name")

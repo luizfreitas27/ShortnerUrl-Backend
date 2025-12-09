@@ -12,8 +12,8 @@ using ShortnerUrl.Api.Persistence;
 namespace ShortnerUrl.Api.Migrations
 {
     [DbContext(typeof(ShortnerUrlContext))]
-    [Migration("20251207120353_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251209021947_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,8 @@ namespace ShortnerUrl.Api.Migrations
 
             modelBuilder.Entity("ShortnerUrl.Api.Models.Link", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()

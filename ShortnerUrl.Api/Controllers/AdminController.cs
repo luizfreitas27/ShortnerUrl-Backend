@@ -9,7 +9,7 @@ namespace ShortnerUrl.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class AdminController : ControllerBase
+public class AdminController :  BaseController
 {
     private readonly IAdminService _service;
 
