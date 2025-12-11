@@ -118,4 +118,19 @@ public class LinkService : ILinkService
         
         _logger.LogInformation("Finished deleting link...");
     }
+
+    public async Task<string> RedirectAsync(string id, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Starting redirection...");
+
+        var link = await _unityOfWork.Links.GetLinkByShortner(id, cancellationToken);
+
+        if (link is null)
+        {
+            _logger.LogWarning("Link not found...");
+            throw new AppException("Link not found...", 404);
+        }
+
+        return link.OriginalUrl;
+    }
 }

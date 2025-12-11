@@ -11,6 +11,8 @@ public interface ILinkService
     Task<LinkResponseDto> UpdateAsync(Guid id, int userId, LinkUpdateRequestDto dto, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, int userId, CancellationToken cancellationToken);
     
+    Task<string> RedirectAsync(string id, CancellationToken cancellationToken);
+    
 
 
 
