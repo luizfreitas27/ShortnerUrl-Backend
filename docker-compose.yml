@@ -7,12 +7,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sngpcdb
+      POSTGRES_DB: shortnerdb
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
-    #    volumes:
-    #      - postgres-data:/var/lib/postgresql/data
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - shortner-network
     restart: always
@@ -55,11 +55,43 @@ services:
       - shortner-network
     restart: unless-stopped
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shortner-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__Default=Host=postgres;Port=5432;Database=shortnerdb;Username=postgres;Password=postgres
+      - Jwt__Issuer=Shortner.Api
+      - Jwt__Audience=Shortner.Api
+      - Jwt__SecretKey=if-you-wanna-change-that-shit-just-go-ahead
+      - Jwt__Expiration=60
+      - AdminSeed__Password=Admin@123
+    ports:
+      - "5148:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - shortner-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
-  #  postgres-data:
+  postgres-data:
   redis-data:
   pgadmin-data:
 
 networks:
   shortner-network:
     driver: bridge
+    external: true
