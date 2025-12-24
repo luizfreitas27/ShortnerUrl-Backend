@@ -68,7 +68,10 @@ services:
       - Jwt__Audience=Shortner.Api
       - Jwt__SecretKey=if-you-wanna-change-that-shit-just-go-ahead
       - Jwt__Expiration=60
-      - AdminSeed__Password=Admin@123
+      - AdminSeed__Password=${ADMIN_PASSWORD}
+    
+    env_file:
+      - .env
     ports:
       - "5148:8080"
     depends_on:
@@ -94,4 +97,3 @@ volumes:
 networks:
   shortner-network:
     driver: bridge
-    external: true

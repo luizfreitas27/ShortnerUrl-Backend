@@ -1,7 +1,9 @@
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ShortnerUrl.Api.Configurations;
 using ShortnerUrl.Api.Middleware;
+using ShortnerUrl.Api.Persistence;
 using ShortnerUrl.Api.Services.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,6 +61,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ShortnerUrlContext>();
+    db.Database.Migrate();
+}
 
 using (var scope = app.Services.CreateScope())
 {
