@@ -19,6 +19,7 @@ public static class DependencyInjectionConfig
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<SeedService>();
         services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<ILinkService, LinkService>();
 
         return services;
     }

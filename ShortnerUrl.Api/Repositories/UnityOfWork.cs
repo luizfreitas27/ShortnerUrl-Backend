@@ -10,6 +10,7 @@ public class UnityOfWork : IUnityOfWork, IAsyncDisposable
     
     private IUserRepository? _userRepository;
     private IRoleRepository? _roleRepository;
+    private ILinkRepository? _linkRepository;
 
     public UnityOfWork(ShortnerUrlContext context)
     {
@@ -21,7 +22,8 @@ public class UnityOfWork : IUnityOfWork, IAsyncDisposable
     
     public IRoleRepository Roles =>
         _roleRepository ??= new RoleRepository(_context);
-    
+    public ILinkRepository Links =>
+        _linkRepository ??= new LinkRepository(_context);
 
     public async Task<int> CommitAsync(CancellationToken cancellationToken)
     {

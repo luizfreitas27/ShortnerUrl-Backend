@@ -37,7 +37,13 @@ public class SeedService
             return;
         }
         
+        var email = _configuration["AdminSeed:Email"];
         var password = _configuration["AdminSeed:Password"];
+
+        if (string.IsNullOrEmpty(email))
+        {
+            _logger.LogWarning("AdminSeed:Email is required.");
+        }
 
         if (string.IsNullOrEmpty(password))
         {
@@ -45,16 +51,17 @@ public class SeedService
             return;
         }
 
-        var dto = new AdminSeedDto
+        var admin = new AdminSeedDto
         {
             Email = "admin@admin.com",
             Username = "admin",
             Password = password
         };
-
-        var admin = _mapper.From(dto).AdaptToType<User>();
         
-        _context.Users.Add(admin);
+       
+        var userAdmin = _mapper.From(admin).AdaptToType<User>();
+        
+        _context.Users.Add(userAdmin);
         await _context.SaveChangesAsync();
         
         _logger.LogInformation("Admin user created successfully.");
