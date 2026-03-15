@@ -18,7 +18,11 @@ builder.Services.AddDbContextConfig(builder.Configuration);
 builder.Services.AddJwtConfig(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddSeedConfig(builder.Configuration);
 builder.Services.AddDependencyInjectionConfig();
+builder.Services.AddRateLimiting(builder.Configuration);
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ShortnerUrlContext>();
 
 
 builder.Services.AddSwaggerGen(c =>
@@ -49,23 +53,38 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", builder =>
-    {
-        builder.WithOrigins("http://localhost:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
+builder.Services.AddCorsConfig(builder.Configuration);
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ShortnerUrlContext>();
-    db.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var pending = db.Database.GetPendingMigrations().ToList();
+
+        if (pending.Count != 0)
+        {
+            logger.LogInformation("Applying {Count} pending migration(s): {Migrations}",
+                pending.Count, string.Join(", ", pending));
+
+            db.Database.Migrate();
+
+            logger.LogInformation("Migrations applied successfully.");
+        }
+        else
+        {
+            logger.LogInformation("Database is up to date. No migrations to apply.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Failed to apply migrations. The application will shut down.");
+        throw;
+    }
 }
 
 using (var scope = app.Services.CreateScope())
@@ -84,14 +103,17 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("AllowFrontend");
+app.UseCors(CorsConfig.PolicyName);
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseRateLimiter();
+
 app.UseMiddleware<ErrorHandleMiddleware>();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

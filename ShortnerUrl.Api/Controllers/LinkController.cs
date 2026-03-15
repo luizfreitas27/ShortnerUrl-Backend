@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using ShortnerUrl.Api.Configurations;
 using ShortnerUrl.Api.Dtos.Link.Request;
 using ShortnerUrl.Api.Shared;
 
@@ -8,6 +10,7 @@ namespace ShortnerUrl.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[EnableRateLimiting(RateLimitingConfig.ApiPolicy)]
 public class LinkController : BaseController
 {
     private readonly ILinkService _service;
@@ -23,8 +26,8 @@ public class LinkController : BaseController
         var userId = GetUserId();
 
         var response = await _service.CreateAsync(userId, dto, cancellationToken);
-        
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+
+        return CreatedAtResponse(nameof(GetById), new { id = response.Id }, response);
     }
 
     [HttpGet]
@@ -32,7 +35,7 @@ public class LinkController : BaseController
     {
         var userId = GetUserId();
         var response = await _service.GetAllAsync(userId, cancellationToken);
-        return Ok(response);
+        return OkResponse(response);
     }
 
     [HttpGet]
@@ -43,7 +46,7 @@ public class LinkController : BaseController
 
         var response = await _service.GetByIdAsync(id, userId, cancellationToken);
 
-        return Ok(response);
+        return OkResponse(response);
 
     }
 
@@ -57,8 +60,8 @@ public class LinkController : BaseController
         var userId = GetUserId();
 
         var response = await _service.UpdateAsync(id, userId, dto, cancellationToken);
-        
-        return Ok(response);
+
+        return OkResponse(response);
     }
 
     [HttpDelete]

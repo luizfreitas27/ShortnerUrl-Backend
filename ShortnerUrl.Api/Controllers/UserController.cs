@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using ShortnerUrl.Api.Configurations;
 using ShortnerUrl.Api.Dtos.User.Request;
 using ShortnerUrl.Api.Shared;
 
@@ -17,10 +19,11 @@ public class UserController : BaseController
 
     [HttpPost]
     [Route("sign-up")]
+    [EnableRateLimiting(RateLimitingConfig.LoginPolicy)]
     public async Task<IActionResult> RegisterUserAsync([FromBody] UserRegisterRequestDto dto, CancellationToken cancellationToken)
     {
         var response = await _service.RegisterAsync(dto, cancellationToken);
-        
-        return Created($"/api/User/{response.Id}", response);
+
+        return CreatedResponse($"/api/User/{response.Id}", response);
     }
 }
