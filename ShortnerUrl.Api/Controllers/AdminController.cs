@@ -26,7 +26,7 @@ public class AdminController :  BaseController
     public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken)
     {
         var users = await _service.GetAllUsers(cancellationToken);
-        return Ok(users);
+        return OkResponse(users);
     }
     
     [HttpGet]
@@ -37,6 +37,6 @@ public class AdminController :  BaseController
     public async Task<IActionResult> GetUser([FromRoute] int id, CancellationToken cancellationToken)
     {
         var users = await _service.GetUserById(id, cancellationToken);
-        return Ok(users);
+        return OkResponse(users);
     }
 }

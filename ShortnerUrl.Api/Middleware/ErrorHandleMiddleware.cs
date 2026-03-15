@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ShortnerUrl.Api.Exeptions;
 using ShortnerUrl.Api.Shared;
 
@@ -8,7 +9,13 @@ namespace ShortnerUrl.Api.Middleware;
 
 public class ErrorHandleMiddleware : IErrorHandleMiddleware
 {
-  private readonly RequestDelegate _next;
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
+    private readonly RequestDelegate _next;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<ErrorHandleMiddleware> _logger;
     
@@ -63,14 +70,11 @@ public class ErrorHandleMiddleware : IErrorHandleMiddleware
             response.StatusCode = (int)HttpStatusCode.ServiceUnavailable; // 503
             response.ContentType = "application/json";
             
-            var timeoutResponse = JsonSerializer.Serialize(new
-            {
-                success = false,
-                error = "Timout exceed.",
-                code = 503
-            });
-            
-            await response.WriteAsync(timeoutResponse);
+            var timeoutResponse = JsonSerializer.Serialize(
+                new { IsSuccess = false, Error = "Timeout exceeded.", Code = 503 },
+                _jsonOptions);
+
+            await response.WriteAsync(timeoutResponse, context.RequestAborted);
             return;
         }
         
@@ -92,31 +96,29 @@ public class ErrorHandleMiddleware : IErrorHandleMiddleware
             _logger.LogWarning("Application error: {StatusCode} - {Message}", (int)status, e.Message);
         }
 
-        var errorResponse = new Dictionary<string, object?>
-        {
-            { "success", false },
-            { "error", e.Message },
-            { "code", (int)status }
-        };
-
         if (_env.IsDevelopment())
         {
-            errorResponse["inner"] = e.InnerException?.Message;
-            errorResponse["stack"] = e.StackTrace;
-            
-            if (e.InnerException != null)
+            var devResult = JsonSerializer.Serialize(new
             {
-                errorResponse["innerStack"] = e.InnerException.StackTrace;
-            }
+                IsSuccess = false,
+                Error = e.Message,
+                Code = (int)status,
+                Inner = e.InnerException?.Message,
+                Stack = e.StackTrace,
+                InnerStack = e.InnerException?.StackTrace
+            }, _jsonOptions);
+
+            response.StatusCode = (int)status;
+            await response.WriteAsync(devResult, context.RequestAborted);
+            return;
         }
 
-        var result = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        });
+        var result = JsonSerializer.Serialize(
+            new { IsSuccess = false, Error = e.Message, Code = (int)status },
+            _jsonOptions);
 
         response.StatusCode = (int)status;
 
-        await response.WriteAsync(result);
+        await response.WriteAsync(result, context.RequestAborted);
     }
 }
